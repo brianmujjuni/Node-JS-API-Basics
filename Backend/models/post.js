@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const postSchema = new Schema(
   {
     title: {
-      String,
+      type:String,
       required: true,
     },
     imageUrl: {
@@ -17,8 +17,9 @@ const postSchema = new Schema(
     },
     creator: {
       type: Object,
-      required: String,
+      required: true,
     },
+   
   },
   { timestamps: true }
 );
