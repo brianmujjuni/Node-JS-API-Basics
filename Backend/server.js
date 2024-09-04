@@ -24,6 +24,14 @@ app.use((req, res, next) => {
 });
 
 app.use("/feed", feedRoutes);
+
+//error handling
+app.use((error,req,res,next)=>{
+  const status = error.statuCode || 500
+  const message = error.message
+  res.status(status).json({message: message})
+})
+
 const dbUrl = process.env.DB
 mongoose
   .connect(dbUrl)
