@@ -35,7 +35,7 @@ exports.createPost = (req, res, next) => {
   const post = new Post({
     title: title,
     content: content,
-    imageUrl: '/images/sample.jpg',
+    imageUrl: imageUrl,
     creator: { name: 'Maximilian' }
   });
   post
@@ -72,3 +72,18 @@ exports.getPost = (req, res, next) => {
       next(err);
     });
 };
+
+
+exports.updatePost = (req,res,next)=>{
+  const postId = req.params.postId
+  const {title,content,image:imageUrl} = req.body
+  if(req.file){
+    imageUrl = req.file.path
+  }
+  if(!imageUrl){
+    const error = new Error('No File picked')
+    error.statusCode = 422
+    throw error
+  }
+
+}
