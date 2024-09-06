@@ -3,7 +3,7 @@ const path = require('path');
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const  multer = require('multer')
-const cors = require('cors');
+const fs = require('fs');
 
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
@@ -13,13 +13,16 @@ const app = express();
 // app.use(cors());
 
 const fileStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'images');
+  destination(req, file, cb) {
+    cb(null, "images/");
   },
-  filename: (req, file, cb) => {
-    cb(null, new Date().toISOString() + '-' + file.originalname);
-  }
-});
+  filename(req, file, cb) {
+    cb(
+      null,
+      `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`
+    );
+  },
+});;
 
 const fileFilter = (req, file, cb) => {
   if (
@@ -38,7 +41,8 @@ app.use(bodyParser.json()); // application/json
 app.use(
   multer({ storage: fileStorage, fileFilter: fileFilter }).single('image')
 );
-app.use('/images', express.static(path.join(__dirname, 'images')));
+
+app.use('images', express.static(path.join(__dirname, 'images')));
 
 
 app.use((req, res, next) => {
