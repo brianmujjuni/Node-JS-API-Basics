@@ -76,6 +76,12 @@ exports.getPost = (req, res, next) => {
 
 exports.updatePost = (req,res,next)=>{
   const postId = req.params.postId
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const error = new Error('Validation failed, entered data is incorrect.');
+    error.statusCode = 422;
+    throw error;
+  }
   const {title,content,image:imageUrl} = req.body
   if(req.file){
     imageUrl = req.file.path
