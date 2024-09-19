@@ -26,5 +26,5 @@ router.put(
   ],
   feedController.updatePost
 );
-
+ 
 module.exports = router;
