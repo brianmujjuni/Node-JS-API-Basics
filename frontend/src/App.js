@@ -106,9 +106,9 @@ class App extends Component {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        email: authData.email,
-        password: authData.password,
-        name: authData.name
+        email: authData.signupForm.email.value,
+        password: authData.signupForm.password.value,
+        name: authData.signupForm.name.value
       })
     })
       .then((res) => {
@@ -118,7 +118,7 @@ class App extends Component {
           );
         }
         if (res.status !== 200 && res.status !== 201) {
-          console.log("Error!");
+          console.log("Error!"); 
           throw new Error("Creating a user failed!");
         }
         return res.json();
