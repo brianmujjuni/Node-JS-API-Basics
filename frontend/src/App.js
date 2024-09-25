@@ -59,7 +59,16 @@ class App extends Component {
   loginHandler = (event, authData) => {
     event.preventDefault();
     this.setState({ authLoading: true });
-    fetch("URL")
+    fetch("http://localhost:8080/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: authData.email,
+        password: authData.password,
+      }),
+    })
       .then((res) => {
         if (res.status === 422) {
           throw new Error("Validation failed.");
@@ -108,8 +117,8 @@ class App extends Component {
       body: JSON.stringify({
         email: authData.signupForm.email.value,
         password: authData.signupForm.password.value,
-        name: authData.signupForm.name.value
-      })
+        name: authData.signupForm.name.value,
+      }),
     })
       .then((res) => {
         if (res.status === 422) {
@@ -118,7 +127,7 @@ class App extends Component {
           );
         }
         if (res.status !== 200 && res.status !== 201) {
-          console.log("Error!"); 
+          console.log("Error!");
           throw new Error("Creating a user failed!");
         }
         return res.json();
