@@ -123,7 +123,7 @@ exports.updatePost = (req, res, next) => {
         throw error;
       }
 
-      if(post.creator.toString() !== req.userId.toString()){
+      if (post.creator.toString() !== req.userId.toString()) {
         const error = new Error("Not authorised.");
         error.statusCode = 403;
         throw error;
@@ -162,6 +162,13 @@ exports.deletePost = (req, res, next) => {
       }
       clearImage(post.imageUrl);
       return Post.findByIdAndRemove(postId);
+    })
+    .then((result) => {
+      return User.findById(req.userId);
+    })
+    .then((user) => {
+      user.posts.pull(postId);
+      return user.save();
     })
     .then((result) => {
       res.status(200).json({ message: "Deleted post" });
