@@ -1,5 +1,7 @@
 const { validationResult } = require("express-validator");
 
+const io = require("../socket");
+
 const Post = require("../models/post");
 const User = require("../models/user");
 exports.getPosts = async (req, res, next) => {
@@ -30,7 +32,7 @@ exports.getPosts = async (req, res, next) => {
   // });
 };
 
-exports.createPost = (req, res, next) => {
+exports.createPost = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = new Error("Validation failed, entered data is incorrect.");
@@ -42,6 +44,7 @@ exports.createPost = (req, res, next) => {
     error.statusCode = 422;
     throw error;
   }
+
   let creator;
   const imageUrl = req.file.path;
   const title = req.body.title;
@@ -52,22 +55,17 @@ exports.createPost = (req, res, next) => {
     imageUrl: imageUrl,
     creator: req.userId,
   });
-  post
-    .save()
-    .then((result) => {
-      return User.findById(req.userId);
-    })
-    .then((user) => {
-      creator = user;
-      user.posts.push(post);
-      return user.save();
-    })
-    .then((result) => {
-      res.status(201).json({
-        message: "Post Created successfully",
-        post: post,
-        creator: { _id: creator._id, name: creator.name },
-      });
+  await post.save();
+  const user = await User.findById(req.userId);
+  user.posts.push(post);
+  await user.save();
+
+  res
+    .status(201)
+    .json({
+      message: "Post Created successfully",
+      post: post,
+      creator: { _id: creator._id, name: creator.name },
     })
 
     .catch((err) => {
