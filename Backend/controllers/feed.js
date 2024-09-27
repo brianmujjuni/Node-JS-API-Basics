@@ -44,36 +44,37 @@ exports.createPost = async (req, res, next) => {
     error.statusCode = 422;
     throw error;
   }
+  try {
+    const imageUrl = req.file.path;
+    const title = req.body.title;
+    const content = req.body.content;
+    const post = new Post({
+      title: title,
+      content: content,
+      imageUrl: imageUrl,
+      creator: req.userId,
+    });
+    await post.save();
+    const user = await User.findById(req.userId);
+    user.posts.push(post);
+    await user.save();
+    ////listen to io
+    io.getIO().emit("posts", {
+      action: "create",
+      post: post,
+    });
 
-  let creator;
-  const imageUrl = req.file.path;
-  const title = req.body.title;
-  const content = req.body.content;
-  const post = new Post({
-    title: title,
-    content: content,
-    imageUrl: imageUrl,
-    creator: req.userId,
-  });
-  await post.save();
-  const user = await User.findById(req.userId);
-  user.posts.push(post);
-  await user.save();
-
-  res
-    .status(201)
-    .json({
+    res.status(201).json({
       message: "Post Created successfully",
       post: post,
       creator: { _id: creator._id, name: creator.name },
-    })
-
-    .catch((err) => {
-      if (!err.statusCode) {
-        err.statusCode = 500;
-      }
-      next(err);
     });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
 };
 
 exports.getPost = (req, res, next) => {

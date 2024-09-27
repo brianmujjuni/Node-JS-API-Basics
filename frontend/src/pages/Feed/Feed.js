@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import { io } from 'socket.io-client';
+import { io } from "socket.io-client";
 
 import Post from "../../components/Feed/Post/Post";
 import Button from "../../components/Button/Button";
@@ -23,8 +23,6 @@ class Feed extends Component {
   };
 
   componentDidMount() {
-  
-
     fetch("URL")
       .then((res) => {
         if (res.status !== 200) {
@@ -36,24 +34,29 @@ class Feed extends Component {
         this.setState({ status: resData.status });
       })
       .catch(this.catchError);
-     
+
     this.loadPosts();
-    io('http://localhost:8080')
-    
+
+    const socket = io("http://localhost:8080");
+    socket.on("posts", (data) => {
+      if (data.action === "create") {
+        this.addPost(data.post);
+      }
+    });
   }
-  addPost = post =>{
-    this.setState(prevState =>{
-      const updatedPosts = [...prevState.posts]
-      if(prevState.postPage === 1){
-        updatedPosts.pop()
-        updatedPosts.unshift(post)
+  addPost = (post) => {
+    this.setState((prevState) => {
+      const updatedPosts = [...prevState.posts];
+      if (prevState.postPage === 1) {
+        updatedPosts.pop();
+        updatedPosts.unshift(post);
       }
       return {
         posts: updatedPosts,
-        totalPosts: prevState.totalPosts + 1
-      }
-    })
-  }
+        totalPosts: prevState.totalPosts + 1,
+      };
+    });
+  };
 
   loadPosts = (direction) => {
     if (direction) {
@@ -70,8 +73,8 @@ class Feed extends Component {
     }
     fetch("http://localhost:8080/feed/posts?page=" + page, {
       headers: {
-        Authorization: 'Bearer ' + this.props.token
-      }
+        Authorization: "Bearer " + this.props.token,
+      },
     })
       .then((res) => {
         if (res.status !== 200) {
@@ -147,8 +150,8 @@ class Feed extends Component {
       method: method,
       body: formData,
       headers: {
-        Authorization: 'Bearer ' + this.props.token
-      }
+        Authorization: "Bearer " + this.props.token,
+      },
     })
       .then((res) => {
         if (res.status !== 200 && res.status !== 201) {
@@ -203,8 +206,8 @@ class Feed extends Component {
     fetch("http://localhost:8080/feed/post" + postId, {
       method: "DELETE",
       headers: {
-        Authorization: 'Bearer ' + this.props.token
-      }
+        Authorization: "Bearer " + this.props.token,
+      },
     })
       .then((res) => {
         if (res.status !== 200 && res.status !== 201) {
