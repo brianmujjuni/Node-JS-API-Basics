@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from "react";
 import { Route, Switch, Redirect, withRouter } from "react-router-dom";
 
+
 import Layout from "./components/Layout/Layout";
 import Backdrop from "./components/Backdrop/Backdrop";
 import Toolbar from "./components/Toolbar/Toolbar";
@@ -39,6 +40,7 @@ class App extends Component {
       new Date(expiryDate).getTime() - new Date().getTime();
     this.setState({ isAuth: true, token: token, userId: userId });
     this.setAutoLogout(remainingMilliseconds);
+    
   }
 
   mobileNavHandler = (isOpen) => {
