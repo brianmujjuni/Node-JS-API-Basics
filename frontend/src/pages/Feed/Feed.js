@@ -40,12 +40,13 @@ class Feed extends Component {
       .catch(this.catchError);
 
     this.loadPosts();
-    const socket = openSocket('http://localhost:8080');
-    socket.on('posts', data => {
-      if (data.action === 'create') {
-        this.addPost(data.post);
-      }
-    });
+    openSocket('http://localhost:8080')
+    // const socket = openSocket('http://localhost:8080');
+    // socket.on('posts', data => {
+    //   if (data.action === 'create') {
+    //     this.addPost(data.post);
+    //   }
+    // });
   }
 
   addPost = post => {

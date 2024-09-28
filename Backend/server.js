@@ -4,11 +4,13 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const multer = require("multer");
 const fs = require("fs");
+const cors = require("cors");
 
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
 const feedRoutes = require("./routes/feed");
 const authRoutes = require("./routes/auth");
+const socket = require("./socket");
 
 const app = express();
 // app.use(cors());
@@ -45,6 +47,8 @@ app.use(
 
 app.use("/images", express.static(path.join(__dirname, "images")));
 
+
+
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
@@ -72,12 +76,18 @@ mongoose
   .connect(dbUrl)
   .then((restult) => {
     const server = app.listen(8080);
-    const io = require('./socket').init(server);
-    // console.log(io)
-    io.on('connection',socket=>{
-     console.log(socket)
-      
-    })
+    // const io = require('./socket').init(server);
+    // io.on('connection', socket => {
+    //   console.log('Client connected');
+    // });
 
+    const io = require("socket.io")(server,{cors: {
+      origin: "http://localhost:3000", // React app's URL (adjust as needed)
+      methods: ["GET", "POST"],
+      credentials: true
+    }});
+    io.on("connection", (socket) => {
+      console.log("user connected");
+    });
   })
   .catch((err) => console.log(err));
