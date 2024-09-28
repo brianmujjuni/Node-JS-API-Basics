@@ -134,7 +134,7 @@ exports.updatePost = async (req, res, next) => {
     const result = await post.save();
 
     io.getIO().emit('posts', { action: 'update', post: result });
-    
+
     res.status(200).json({ message: 'Post updated!', post: result });
   } catch (err) {
     if (!err.statusCode) {
@@ -166,7 +166,11 @@ exports.deletePost = async (req, res, next) => {
     const user = await User.findById(req.userId);
     user.posts.pull(postId);
     await user.save();
-
+    
+    io.getIO().emit('posts'),{
+      action: 'delete',
+      post: postId
+    }
     res.status(200).json({ message: 'Deleted post.' });
   } catch (err) {
     if (!err.statusCode) {
