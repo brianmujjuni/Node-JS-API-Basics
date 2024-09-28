@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const multer = require("multer");
 const fs = require("fs");
-const cors = require("cors");
+
 
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
