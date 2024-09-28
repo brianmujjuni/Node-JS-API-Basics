@@ -47,8 +47,6 @@ app.use(
 
 app.use("/images", express.static(path.join(__dirname, "images")));
 
-
-
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
@@ -81,11 +79,7 @@ mongoose
     //   console.log('Client connected');
     // });
 
-    const io = require("socket.io")(server,{cors: {
-      origin: "http://localhost:3000", // React app's URL (adjust as needed)
-      methods: ["GET", "POST"],
-      credentials: true
-    }});
+    const io = require("./socket").init(server);
     io.on("connection", (socket) => {
       console.log("user connected");
     });
